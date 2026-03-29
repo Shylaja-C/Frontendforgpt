@@ -16,14 +16,14 @@ import MarketPage from './components/MarketPage';
 import './index.css';
 
 const NAV_ITEMS = [
-  { path: '/',        icon: Home,          key: 'home' },
-  { path: '/chat',    icon: MessageCircle, key: 'startChat' },
-  { path: '/tips',    icon: Lightbulb,     key: 'tips' },
-  { path: '/schemes', icon: BookOpen,      key: 'schemes' },
+  { path: '/', icon: Home, key: 'home' },
+  { path: '/chat', icon: MessageCircle, key: 'startChat' },
+  { path: '/tips', icon: Lightbulb, key: 'tips' },
+  { path: '/schemes', icon: BookOpen, key: 'schemes' },
 ];
 
 function LangModal({ onClose }) {
-  const { lang, changeLang } = useLang();
+  const { lang, changeLang, languages } = useLang();
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
       <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: '20px', padding: '28px', width: '340px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
@@ -34,7 +34,7 @@ function LangModal({ onClose }) {
           </button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {LANGUAGES.map(l => (
+          {(languages || LANGUAGES).map(l => (
             <button key={l.code} onClick={() => { changeLang(l.code); onClose(); }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: lang.code === l.code ? '#e8f5e9' : '#f8f8f8' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span style={{ fontSize: '22px' }}>{l.flag}</span>
@@ -141,15 +141,15 @@ function Layout() {
       <TopNav />
       <main style={{ flex: 1 }}>
         <Routes>
-          <Route path="/login"   element={<LoginPage />} />
-          <Route path="/signup"  element={<SignupPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/schemes" element={<SchemesPage />} />
-          <Route path="/"        element={<HomePage />} />
-          <Route path="/chat"    element={<ChatPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/weather" element={<WeatherPage />} />
-          <Route path="/tips"    element={<TipsPage />} />
-          <Route path="/market"  element={<MarketPage />} />
+          <Route path="/tips" element={<TipsPage />} />
+          <Route path="/market" element={<MarketPage />} />
         </Routes>
       </main>
     </div>
