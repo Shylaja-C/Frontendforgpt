@@ -1,20 +1,20 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle, CloudSun, ShieldCheck, Users, Star, ArrowRight, Mic } from "lucide-react";
 import { useLang } from "../context/LangContext";
 import { t } from "../config";
 
 const IMG = {
-  hero: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1600&q=85",
-  farmer1: "https://images.unsplash.com/photo-1566281796817-93bc94d7dbd2?w=800&q=80",
-  farmer2: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=800&q=80",
-  farmer3: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=800&q=80",
-  rice: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=900&q=80",
-  wheat: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=900&q=80",
-  veggie: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=900&q=80",
-  weather: "https://images.unsplash.com/photo-1504386106331-3e4e71712b38?w=900&q=80",
-  market: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=900&q=80",
-  soil: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=900&q=80",
+  hero:       "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1600&q=85",
+  farmer1:    "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80",
+  farmer2:    "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=800&q=80",
+  farmer3:    "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&q=80",
+  rice:       "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=900&q=80",
+  wheat:      "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=900&q=80",
+  veggie:     "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=900&q=80",
+  weather:    "https://images.unsplash.com/photo-1504386106331-3e4e71712b38?w=900&q=80",
+  market:     "https://images.unsplash.com/photo-1542838132-92c53300491e?w=900&q=80",
+  soil:       "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=900&q=80",
   irrigation: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=900&q=80",
 };
 
@@ -23,12 +23,45 @@ export default function HomePage() {
   const { lang } = useLang();
   const [hov, setHov] = useState(null);
 
-  const features = [
-    { img: IMG.farmer1, icon: "💬", title: "AI Farming Chat", desc: "Ask crop, pest, soil questions in your language. Get instant expert answers.", path: "/chat", color: "#1a7a32", bg: "#e8f5e9" },
-    { img: IMG.weather, icon: "🌤️", title: "Live Weather", desc: "GPS-based weather with 5-day forecast and smart farming alerts.", path: "/weather", color: "#1565c0", bg: "#e3f2fd" },
-    { img: IMG.soil, icon: "💡", title: "Expert Tips", desc: "Curated farming tips on crops, pest control, irrigation and soil health.", path: "/tips", color: "#b45309", bg: "#fef3c7" },
-    { img: IMG.market, icon: "📈", title: "Market Prices", desc: "Daily mandi rates for rice, wheat, vegetables and spices across India.", path: "/market", color: "#7c3aed", bg: "#ede9fe" },
-  ];
+    const FEAT = {
+    'en-IN': [
+      { img: IMG.farmer1, icon: "💬", title: "AI Farming Chat", desc: "Ask crop, pest, soil questions in your language.", path: "/chat", color: "#1a7a32", bg: "#e8f5e9" },
+      { img: IMG.weather, icon: "🌤️", title: "Live Weather", desc: "GPS-based weather with 5-day forecast and farming alerts.", path: "/weather", color: "#1565c0", bg: "#e3f2fd" },
+      { img: IMG.soil, icon: "💡", title: "Expert Tips", desc: "Curated farming tips on crops, pest control and irrigation.", path: "/tips", color: "#b45309", bg: "#fef3c7" },
+      { img: IMG.market, icon: "📈", title: "Market Prices", desc: "Daily mandi rates for rice, wheat, vegetables across India.", path: "/market", color: "#7c3aed", bg: "#ede9fe" },
+    ],
+    'ta-IN': [
+      { img: IMG.farmer1, icon: "💬", title: "AI விவசாய அரட்டை", desc: "உங்கள் மொழியில் பயிர், பூச்சி, மண் கேள்விகள் கேளுங்கள்.", path: "/chat", color: "#1a7a32", bg: "#e8f5e9" },
+      { img: IMG.weather, icon: "🌤️", title: "நேரடி வானிலை", desc: "GPS அடிப்படையிலான வானிலை மற்றும் 5 நாள் முன்னறிவிப்பு.", path: "/weather", color: "#1565c0", bg: "#e3f2fd" },
+      { img: IMG.soil, icon: "💡", title: "நிபுணர் குறிப்புகள்", desc: "பயிர், பூச்சி கட்டுப்பாடு, நீர்ப்பாசன குறிப்புகள்.", path: "/tips", color: "#b45309", bg: "#fef3c7" },
+      { img: IMG.market, icon: "📈", title: "சந்தை விலை", desc: "அரிசி, கோதுமை, காய்கறிகளின் தினசரி மண்டி விலைகள்.", path: "/market", color: "#7c3aed", bg: "#ede9fe" },
+    ],
+    'hi-IN': [
+      { img: IMG.farmer1, icon: "💬", title: "AI खेती चैट", desc: "अपनी भाषा में फसल, कीट, मिट्टी के सवाल पूछें।", path: "/chat", color: "#1a7a32", bg: "#e8f5e9" },
+      { img: IMG.weather, icon: "🌤️", title: "लाइव मौसम", desc: "GPS आधारित मौसम और 5 दिन का पूर्वानुमान।", path: "/weather", color: "#1565c0", bg: "#e3f2fd" },
+      { img: IMG.soil, icon: "💡", title: "विशेषज्ञ सुझाव", desc: "फसल, कीट नियंत्रण, सिंचाई पर उपयोगी सुझाव।", path: "/tips", color: "#b45309", bg: "#fef3c7" },
+      { img: IMG.market, icon: "📈", title: "बाज़ार भाव", desc: "चावल, गेहूं, सब्जियों के दैनिक मंडी भाव।", path: "/market", color: "#7c3aed", bg: "#ede9fe" },
+    ],
+    'te-IN': [
+      { img: IMG.farmer1, icon: "💬", title: "AI వ్యవసాయ చాట్", desc: "మీ భాషలో పంట, పురుగు, నేల ప్రశ్నలు అడగండి.", path: "/chat", color: "#1a7a32", bg: "#e8f5e9" },
+      { img: IMG.weather, icon: "🌤️", title: "లైవ్ వాతావరణం", desc: "GPS ఆధారిత వాతావరణం మరియు 5 రోజుల అంచనా.", path: "/weather", color: "#1565c0", bg: "#e3f2fd" },
+      { img: IMG.soil, icon: "💡", title: "నిపుణుల చిట్కాలు", desc: "పంట, కీట నియంత్రణ, నీటిపారుదల చిట్కాలు.", path: "/tips", color: "#b45309", bg: "#fef3c7" },
+      { img: IMG.market, icon: "📈", title: "మార్కెట్ ధరలు", desc: "వరి, గోధుమ, కూరగాయల రోజువారీ మండి ధరలు.", path: "/market", color: "#7c3aed", bg: "#ede9fe" },
+    ],
+    'kn-IN': [
+      { img: IMG.farmer1, icon: "💬", title: "AI ಕೃಷಿ ಚಾಟ್", desc: "ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಬೆಳೆ, ಕೀಟ, ಮಣ್ಣು ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ.", path: "/chat", color: "#1a7a32", bg: "#e8f5e9" },
+      { img: IMG.weather, icon: "🌤️", title: "ನೇರ ಹವಾಮಾನ", desc: "GPS ಆಧಾರಿತ ಹವಾಮಾನ ಮತ್ತು 5 ದಿನಗಳ ಮುನ್ಸೂಚನೆ.", path: "/weather", color: "#1565c0", bg: "#e3f2fd" },
+      { img: IMG.soil, icon: "💡", title: "ತಜ್ಞರ ಸಲಹೆ", desc: "ಬೆಳೆ, ಕೀಟ ನಿಯಂತ್ರಣ, ನೀರಾವರಿ ಸಲಹೆಗಳು.", path: "/tips", color: "#b45309", bg: "#fef3c7" },
+      { img: IMG.market, icon: "📈", title: "ಮಾರುಕಟ್ಟೆ ಬೆಲೆ", desc: "ಅಕ್ಕಿ, ಗೋಧಿ, ತರಕಾರಿಗಳ ದೈನಂದಿನ ಮಂಡಿ ಬೆಲೆಗಳು.", path: "/market", color: "#7c3aed", bg: "#ede9fe" },
+    ],
+    'ml-IN': [
+      { img: IMG.farmer1, icon: "💬", title: "AI കൃഷി ചാറ്റ്", desc: "നിങ്ങളുടെ ഭാഷയിൽ വിള, കീട, മണ്ണ് ചോദ്യങ്ങൾ ചോദിക്കൂ.", path: "/chat", color: "#1a7a32", bg: "#e8f5e9" },
+      { img: IMG.weather, icon: "🌤️", title: "തത്സമയ കാലാവസ്ഥ", desc: "GPS അടിസ്ഥാനത്തിലുള്ള കാലാവസ്ഥയും 5 ദിവസ പ്രവചനവും.", path: "/weather", color: "#1565c0", bg: "#e3f2fd" },
+      { img: IMG.soil, icon: "💡", title: "വിദഗ്ധ നുറുങ്ങുകൾ", desc: "വിള, കീട നിയന്ത്രണം, ജലസേചന നുറുങ്ങുകൾ.", path: "/tips", color: "#b45309", bg: "#fef3c7" },
+      { img: IMG.market, icon: "📈", title: "വിപണി വില", desc: "അരി, ഗോതമ്പ്, പച്ചക്കറികളുടെ ദൈനംദിന മണ്ടി വിലകൾ.", path: "/market", color: "#7c3aed", bg: "#ede9fe" },
+    ],
+  };
+  const features = FEAT[lang.code] || FEAT['en-IN'];
 
   const chatCards = [
     { emoji: "🌾", key: "cropHelp", prompt: "Crop Advice", color: "#1a7a32", bg: "#e8f5e9" },
@@ -196,7 +229,7 @@ export default function HomePage() {
         <img src={IMG.irrigation} alt="irrigation" loading="lazy" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         <div style={{ position: "absolute", inset: 0, background: "rgba(5,25,10,0.84)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: "700px", margin: "0 auto", padding: "100px 32px", textAlign: "center" }}>
-          <h2 style={{ fontSize: "clamp(28px,4vw,52px)", fontWeight: "900", color: "#fff", marginBottom: "18px", letterSpacing: "-1px" }}>Ready to grow smarter? 🌾</h2>
+          <h2 style={{ fontSize: "clamp(28px,4vw,52px)", fontWeight: "900", color: "#fff", marginBottom: "18px", letterSpacing: "-1px" }}>Ready to grow smarter? ��</h2>
           <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "18px", marginBottom: "36px", lineHeight: 1.7 }}>Join 50,000+ farmers already using FarmBot. Free, fast, and in your language.</p>
           <button onClick={() => navigate("/chat")} style={{ background: "#25a244", color: "#fff", borderRadius: "12px", padding: "18px 40px", fontSize: "18px", fontWeight: "800", border: "none", cursor: "pointer", boxShadow: "0 8px 28px rgba(37,162,68,0.5)", display: "inline-flex", alignItems: "center", gap: "10px" }}>
             <MessageCircle size={22} /> {t(lang, "startChat")} <ArrowRight size={18} />

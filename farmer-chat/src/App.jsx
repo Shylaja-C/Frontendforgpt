@@ -3,6 +3,8 @@ import { Home, MessageCircle, Lightbulb, Sprout, Globe, X, Check } from 'lucide-
 import { useState } from 'react';
 import { LangProvider, useLang } from './context/LangContext';
 import { LANGUAGES, t } from './config';
+import LoginPage from './components/LoginPage';
+import SignupPage from './components/SignupPage';
 import HomePage from './components/HomePage';
 import ChatPage from './components/ChatPage';
 import WeatherPage from './components/WeatherPage';
@@ -106,6 +108,12 @@ function TopNav() {
           }}>
             <Globe size={15} /> {lang.label}
           </button>
+          <button onClick={() => navigate('/login')} className="hide-mobile" style={{
+            background: 'transparent', color: '#1a7a32', border: '1.5px solid #c8e6c9',
+            borderRadius: '10px', padding: '9px 18px', fontWeight: '700', fontSize: '14px', cursor: 'pointer',
+          }}>
+            Login
+          </button>
           <button onClick={() => navigate('/chat')} className="hide-mobile" style={{
             background: 'linear-gradient(135deg, #1a7a32, #25a244)',
             color: '#fff', borderRadius: '10px', padding: '9px 20px',
@@ -151,6 +159,8 @@ function Layout() {
       <TopNav />
       <main style={{ flex: 1 }}>
         <Routes>
+          <Route path="/login"    element={<LoginPage />} />
+          <Route path="/signup"   element={<SignupPage />} />
           <Route path="/"        element={<HomePage />} />
           <Route path="/chat"    element={<ChatPage />} />
           <Route path="/weather" element={<WeatherPage />} />
