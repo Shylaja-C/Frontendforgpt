@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Droplets, Wind, Thermometer, AlertTriangle } from 'lucide-react';
 import { useLang } from '../context/LangContext';
+import { BASE_API_URL } from '../config';
 
 const WEATHER_API_KEY = 'YOUR_OPENWEATHER_API_KEY';
 
@@ -47,13 +48,13 @@ const s = {
 };
 
 const TX = {
-  title:    { 'ta-IN': '🌤️ வானிலை', 'hi-IN': '🌤️ मौसम', 'te-IN': '🌤️ వాతావరణం', 'kn-IN': '🌤️ ಹವಾಮಾನ', 'ml-IN': '🌤️ കാലാവസ്ഥ', 'en-IN': '🌤️ Weather' },
+  title: { 'ta-IN': '🌤️ வானிலை', 'hi-IN': '🌤️ मौसम', 'te-IN': '🌤️ వాతావరణం', 'kn-IN': '🌤️ ಹವಾಮಾನ', 'ml-IN': '🌤️ കാലാവസ്ഥ', 'en-IN': '🌤️ Weather' },
   humidity: { 'ta-IN': 'ஈரப்பதம்', 'hi-IN': 'नमी', 'te-IN': 'తేమ', 'kn-IN': 'ತೇವಾಂಶ', 'ml-IN': 'ഈർപ്പം', 'en-IN': 'Humidity' },
-  wind:     { 'ta-IN': 'காற்று', 'hi-IN': 'हवा', 'te-IN': 'గాలి', 'kn-IN': 'ಗಾಳಿ', 'ml-IN': 'കാറ്റ്', 'en-IN': 'Wind' },
-  feels:    { 'ta-IN': 'உணர்வு', 'hi-IN': 'महसूस', 'te-IN': 'అనుభవం', 'kn-IN': 'ಅನಿಸಿಕೆ', 'ml-IN': 'അനുഭവം', 'en-IN': 'Feels like' },
-  tipsTitle:{ 'ta-IN': '🌾 இன்றைய விவசாய குறிப்புகள்', 'hi-IN': '🌾 आज की खेती सलाह', 'te-IN': '🌾 నేటి వ్యవసాయ చిట్కాలు', 'kn-IN': '🌾 ಇಂದಿನ ಕೃಷಿ ಸಲಹೆ', 'ml-IN': '🌾 ഇന്നത്തെ കൃഷി നുറുങ്ങുകൾ', 'en-IN': '🌾 Farming Tips for Today' },
-  loading:  { 'ta-IN': '📡 உங்கள் இடத்தின் வானிலை பெறுகிறோம்...', 'hi-IN': '📡 आपके स्थान का मौसम लोड हो रहा है...', 'te-IN': '📡 మీ స్థానం వాతావరణం లోడ్ అవుతోంది...', 'kn-IN': '📡 ನಿಮ್ಮ ಸ್ಥಳದ ಹವಾಮಾನ ಲೋಡ್ ಆಗುತ್ತಿದೆ...', 'ml-IN': '📡 നിങ്ങളുടെ സ്ഥലത്തെ കാലാവസ്ഥ ലോഡ് ആകുന്നു...', 'en-IN': '📡 Getting your location weather...' },
-  refresh:  { 'ta-IN': '🔄 புதுப்பிக்கவும்', 'hi-IN': '🔄 ताज़ा करें', 'te-IN': '🔄 రిఫ్రెష్', 'kn-IN': '🔄 ರಿಫ್ರೆಶ್', 'ml-IN': '🔄 പുതുക്കുക', 'en-IN': '🔄 Refresh Weather' },
+  wind: { 'ta-IN': 'காற்று', 'hi-IN': 'हवा', 'te-IN': 'గాలి', 'kn-IN': 'ಗಾಳಿ', 'ml-IN': 'കാറ്റ്', 'en-IN': 'Wind' },
+  feels: { 'ta-IN': 'உணர்வு', 'hi-IN': 'महसूस', 'te-IN': 'అనుభవం', 'kn-IN': 'ಅನಿಸಿಕೆ', 'ml-IN': 'അനുഭവം', 'en-IN': 'Feels like' },
+  tipsTitle: { 'ta-IN': '🌾 இன்றைய விவசாய குறிப்புகள்', 'hi-IN': '🌾 आज की खेती सलाह', 'te-IN': '🌾 నేటి వ్యవసాయ చిట్కాలు', 'kn-IN': '🌾 ಇಂದಿನ ಕೃಷಿ ಸಲಹೆ', 'ml-IN': '🌾 ഇന്നത്തെ കൃഷി നുറുങ്ങുകൾ', 'en-IN': '🌾 Farming Tips for Today' },
+  loading: { 'ta-IN': '📡 உங்கள் இடத்தின் வானிலை பெறுகிறோம்...', 'hi-IN': '📡 आपके स्थान का मौसम लोड हो रहा है...', 'te-IN': '📡 మీ స్థానం వాతావరణం లోడ్ అవుతోంది...', 'kn-IN': '📡 ನಿಮ್ಮ ಸ್ಥಳದ ಹವಾಮಾನ ಲೋಡ್ ಆಗುತ್ತಿದೆ...', 'ml-IN': '📡 നിങ്ങളുടെ സ്ഥലത്തെ കാലാവസ്ഥ ലോഡ് ആകുന്നു...', 'en-IN': '📡 Getting your location weather...' },
+  refresh: { 'ta-IN': '🔄 புதுப்பிக்கவும்', 'hi-IN': '🔄 ताज़ा करें', 'te-IN': '🔄 రిఫ్రెష్', 'kn-IN': '🔄 ರಿಫ್ರೆಶ್', 'ml-IN': '🔄 പുതുക്കുക', 'en-IN': '🔄 Refresh Weather' },
   tryAgain: { 'ta-IN': '📍 மீண்டும் முயற்சிக்கவும்', 'hi-IN': '📍 फिर कोशिश करें', 'te-IN': '📍 మళ్ళీ ప్రయత్నించండి', 'kn-IN': '📍 ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ', 'ml-IN': '📍 വീണ്ടും ശ്രമിക്കുക', 'en-IN': '📍 Try Again' },
 };
 
@@ -83,28 +84,46 @@ export default function WeatherPage() {
   async function fetchWeather(lat, lon) {
     setLoading(true); setError('');
     try {
-      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m&timezone=auto&forecast_days=1`);
+      // 1. Refresh location on backend and get smart summary
+      const resLocation = await fetch(`${BASE_API_URL}/api/location`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lat, lon }),
+      });
+      const backendData = await resLocation.json();
+      const backendWeatherSummary = backendData.weather;
+
+      // 2. Fetch raw data for the cards (optionally from backend if it returns everything, 
+      // but backend currently only returns a text summary in /api/location)
+      // Let's call open-meteo like before to keep the rich UI data, OR better, 
+      // let's assume the backend provides the data.
+      // For now, I'll keep the direct call but also log the backend context.
+
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=relative_humidity_2m,temperature_2m,wind_speed_10m&current_weather=true&timezone=auto`);
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
-      
-      // Map Open-Meteo response to OpenWeatherMap format for compatibility
+
       const mapped = {
         main: {
           temp: data.current_weather.temperature,
-          feels_like: data.current_weather.temperature - 2, // Approximate
-          humidity: data.hourly.relativehumidity_2m[0] || 60,
+          feels_like: data.current_weather.temperature - 2,
+          humidity: data.current?.relative_humidity_2m || 60,
         },
         weather: [{
           main: getWeatherType(data.current_weather.weathercode),
           description: getWeatherDesc(data.current_weather.weathercode),
         }],
         wind: {
-          speed: data.current_weather.windspeed / 3.6, // Convert km/h to m/s
+          speed: data.current_weather.windspeed / 3.6,
         },
         name: 'Your Location',
+        backendSummary: backendWeatherSummary
       };
       setWeather(mapped);
-    } catch { setError('Could not load weather. Check your connection.'); }
+    } catch (error) {
+      console.error('Weather Fetch Error:', error);
+      setError('Could not load weather. Check your connection.');
+    }
     setLoading(false);
   }
 
@@ -158,7 +177,13 @@ export default function WeatherPage() {
                 </div>
               </div>
             </div>
-            {weather.weather[0].main.toLowerCase().includes('rain') && (
+            {weather.backendSummary && (
+              <div style={s.alertCard}>
+                <AlertTriangle size={20} color="#e65100" style={{ flexShrink: 0 }} />
+                <span style={s.alertText}>📡 Backend Alert: {weather.backendSummary}</span>
+              </div>
+            )}
+            {weather.weather[0].main.toLowerCase().includes('rain') && !weather.backendSummary?.includes('Rain') && (
               <div style={s.alertCard}>
                 <AlertTriangle size={20} color="#e65100" style={{ flexShrink: 0 }} />
                 <span style={s.alertText}>🌧️ Rain detected – avoid pesticide spraying and field operations today.</span>

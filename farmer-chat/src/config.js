@@ -2,6 +2,7 @@ export const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
 export const WEATHER_API_KEY = 'YOUR_OPENWEATHER_API_KEY';
 export const SARVAM_API_KEY = 'YOUR_SARVAM_API_KEY';
 export const FCM_VAPID_KEY = 'YOUR_FCM_VAPID_KEY';
+export const BASE_API_URL = 'http://localhost:8000';
 
 export const LANGUAGES = [
   { code: 'ta-IN', label: 'தமிழ்',   flag: '🇮🇳', sarvam: 'ta-IN', name: 'Tamil' },
