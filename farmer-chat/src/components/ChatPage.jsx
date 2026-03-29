@@ -1,4 +1,5 @@
 ﻿import { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Mic, MicOff, Send, Volume2, Trash2, Bot, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { useLang } from '../context/LangContext';
