@@ -1,0 +1,99 @@
+code = """import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+i18n.use(initReactI18next).init({
+  resources: {
+    en: { translation: {
+      weather:'Weather', humidity:'Humidity', wind:'Wind', feelsLike:'Feels like',
+      farmingTips:'Farming Tips for Today', refresh:'Refresh Weather', tryAgain:'Try Again',
+      preventionTitle:'Prevention Tips',
+      prevention1:'Check soil moisture before irrigating to avoid overwatering',
+      prevention2:'Inspect crop leaves daily for early signs of pest or disease',
+      prevention3:'Apply fertilizer in early morning or evening to reduce evaporation',
+      prevention4:'Keep field borders clean to prevent pest migration from weeds',
+      analyzePlant:'Analyze Plant', analyzing:'Analyzing...', uploadPhoto:'Upload Photo',
+      tapSelect:'Tap to select a photo', diseaseDetected:'Disease Detected',
+      urgency:'Urgency', severity:'Severity', survival:'Survival Chance',
+      treatment:'Treatment Plan', recommendation:'Recommendation',
+      analyzeAnother:'Analyze Another Plant', scanCrop:'Scan My Crop',
+      plantDoctorTitle:'Plant Doctor', plantDoctorDesc:'Upload a crop photo to detect disease instantly',
+      onlineStatus:'Online', clearChat:'Clear Chat', newChat:'New Chat',
+      chatHistory:'Chat History', noPastChats:'No past chats yet.',
+      reportPest:'Report Pest Problem', pestShared:'Shared Alert', pestChecking:'Analyzing...',
+      pestDesc:'Help other farmers by sharing pest sightings in your area.',
+      govSchemes:'Government Schemes', searchSchemes:'Search schemes...', allCategories:'All',
+      keyBenefits:'Key Benefits', howToApply:'How to Apply', visitPortal:'Visit', helpline:'Helpline',
+      profile:'Profile', logout:'Logout', exitGuest:'Exit Guest Mode',
+      createAccount:'Create Free Account', guestFarmer:'Guest Farmer',
+      browsingGuest:'Browsing as guest', farmBotMember:'FarmBot Member',
+      quickAccess:'Quick Access', profileDetails:'Profile Details',
+      chats:'Chats', cropsTracked:'Crops Tracked', daysActive:'Days Active', tipsSaved:'Tips Saved',
+    }},
+    ta: { translation: {
+      weather:'வானிலை', humidity:'ஈரப்பதம்', wind:'காற்று', feelsLike:'உணர்வு',
+      farmingTips:'இன்றைய விவசாய குறிப்புகள்', refresh:'புதுப்பிக்கவும்', tryAgain:'மீண்டும் முயற்சிக்கவும்',
+      preventionTitle:'தடுப்பு குறிப்புகள்',
+      prevention1:'அதிகமாக நீர் பாய்ச்சுவதை தவிர்க்க நீர்ப்பாசனத்திற்கு முன் மண் ஈரப்பதத்தை சரிபார்க்கவும்',
+      prevention2:'பூச்சி அல்லது நோயின் ஆரம்ப அறிகுறிகளுக்கு தினமும் பயிர் இலைகளை சரிபார்க்கவும்',
+      prevention3:'ஆவியாதலை குறைக்க காலை அல்லது மாலையில் உரம் இடவும்',
+      prevention4:'களைகளிலிருந்து பூச்சி பரவலை தடுக்க வயல் எல்லைகளை சுத்தமாக வைக்கவும்',
+      analyzePlant:'பகுப்பாய்வு செய்', analyzing:'பகுப்பாய்வு நடக்கிறது...', uploadPhoto:'புகைப்படம் பதிவேற்றவும்',
+      tapSelect:'புகைப்படம் தேர்ந்தெடுக்க தட்டவும்', diseaseDetected:'நோய் கண்டறிதல்',
+      urgency:'அவசரநிலை', severity:'தீவிரம்', survival:'உயிர்வாழ்வு வாய்ப்பு',
+      treatment:'சிகிச்சை திட்டம்', recommendation:'பரிந்துரை',
+      analyzeAnother:'மற்றொரு தாவரத்தை பகுப்பாய்வு செய்', scanCrop:'என் பயிரை ஸ்கேன் செய்',
+      plantDoctorTitle:'தாவர மருத்துவர்', plantDoctorDesc:'பயிர் புகைப்படம் பதிவேற்றி நோயை கண்டறியுங்கள்',
+      onlineStatus:'ஆன்லைன்', clearChat:'அரட்டையை அழிக்கவும்', newChat:'புதிய அரட்டை',
+      chatHistory:'அரட்டை வரலாறு', noPastChats:'இதுவரை அரட்டைகள் இல்லை.',
+      reportPest:'பூச்சி பிரச்சனை தெரிவிக்கவும்', pestShared:'எச்சரிக்கை பகிரப்பட்டது', pestChecking:'பகுப்பாய்வு...',
+      pestDesc:'உங்கள் பகுதியில் பூச்சி தகவல்களை பகிர்ந்து மற்ற விவசாயிகளுக்கு உதவுங்கள்.',
+      govSchemes:'அரசு திட்டங்கள்', searchSchemes:'திட்டங்களை தேடுங்கள்...', allCategories:'அனைத்தும்',
+      keyBenefits:'முக்கிய நன்மைகள்', howToApply:'விண்ணப்பிக்கும் முறை', visitPortal:'இணையதளம் பார்க்க', helpline:'உதவி எண்',
+      profile:'சுயவிவரம்', logout:'வெளியேறு', exitGuest:'விருந்தினர் பயன்முறையிலிருந்து வெளியேறு',
+      createAccount:'இலவச கணக்கு உருவாக்கு', guestFarmer:'விருந்தினர் விவசாயி',
+      browsingGuest:'விருந்தினராக உலாவுகிறீர்கள்', farmBotMember:'FarmBot உறுப்பினர்',
+      quickAccess:'விரைவு அணுகல்', profileDetails:'சுயவிவர விவரங்கள்',
+      chats:'அரட்டைகள்', cropsTracked:'கண்காணிக்கப்பட்ட பயிர்கள்', daysActive:'செயலில் உள்ள நாட்கள்', tipsSaved:'சேமிக்கப்பட்ட குறிப்புகள்',
+    }},
+    hi: { translation: {
+      weather:'मौसम', humidity:'नमी', wind:'हवा', feelsLike:'महसूस',
+      farmingTips:'आज की खेती सलाह', refresh:'ताज़ा करें', tryAgain:'फिर कोशिश करें',
+      preventionTitle:'बचाव के सुझाव',
+      prevention1:'अधिक पानी देने से बचने के लिए सिंचाई से पहले मिट्टी की नमी जांचें',
+      prevention2:'कीट या बीमारी के शुरुआती संकेतों के लिए रोज फसल की पत्तियां जांचें',
+      prevention3:'वाष्पीकरण कम करने के लिए सुबह या शाम को खाद डालें',
+      prevention4:'खरपतवार से कीट फैलाव रोकने के लिए खेत की सीमाएं साफ रखें',
+      analyzePlant:'विश्लेषण करें', analyzing:'विश्लेषण हो रहा है...', uploadPhoto:'फोटो अपलोड करें',
+      tapSelect:'फोटो चुनने के लिए टैप करें', diseaseDetected:'रोग पहचान',
+      urgency:'तात्कालिकता', severity:'गंभीरता', survival:'बचने की संभावना',
+      treatment:'उपचार योजना', recommendation:'सिफारिश',
+      analyzeAnother:'दूसरे पौधे का विश्लेषण करें', scanCrop:'मेरी फसल स्कैन करें',
+      plantDoctorTitle:'पौधा डॉक्टर', plantDoctorDesc:'फसल की फोटो अपलोड करें और बीमारी पहचानें',
+      onlineStatus:'ऑनलाइन', clearChat:'चैट साफ़ करें', newChat:'नई चैट',
+      chatHistory:'चैट इतिहास', noPastChats:'अभी तक कोई चैट नहीं।',
+      reportPest:'कीट समस्या रिपोर्ट करें', pestShared:'अलर्ट साझा किया', pestChecking:'विश्लेषण...',
+      pestDesc:'अपने क्षेत्र में कीट की जानकारी साझा करके अन्य किसानों की मदद करें।',
+      govSchemes:'सरकारी योजनाएं', searchSchemes:'योजनाएं खोजें...', allCategories:'सभी',
+      keyBenefits:'मुख्य लाभ', howToApply:'आवेदन कैसे करें', visitPortal:'वेबसाइट देखें', helpline:'हेल्पलाइन',
+      profile:'प्रोफ़ाइल', logout:'लॉगआउट', exitGuest:'अतिथि मोड से बाहर निकलें',
+      createAccount:'मुफ्त खाता बनाएं', guestFarmer:'अतिथि किसान',
+      browsingGuest:'अतिथि के रूप में ब्राउज़ कर रहे हैं', farmBotMember:'FarmBot सदस्य',
+      quickAccess:'त्वरित पहुंच', profileDetails:'प्रोफ़ाइल विवरण',
+      chats:'चैट', cropsTracked:'ट्रैक की गई फसलें', daysActive:'सक्रिय दिन', tipsSaved:'सहेजे गए सुझाव',
+    }},
+  },
+  lng: 'en',
+  fallbackLng: 'en',
+  interpolation: { escapeValue: false },
+});
+
+export default i18n;
+"""
+
+with open('src/i18n.js', 'w', encoding='utf-8') as f:
+    f.write(code)
+
+raw = open('src/i18n.js', 'rb').read()
+print('Size:', len(raw))
+print('Has export default:', b'export default' in raw)
+print('BOM:', raw[:3] == b'\\xef\\xbb\\xbf')

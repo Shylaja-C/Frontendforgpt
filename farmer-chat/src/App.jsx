@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { Home, MessageCircle, Lightbulb, Sprout, Globe, X, Check, User, BookOpen } from 'lucide-react';
+import { Home, MessageCircle, Lightbulb, Sprout, Globe, X, Check, User, BookOpen, Microscope } from 'lucide-react';
 import { useState } from 'react';
 import { LangProvider, useLang } from './context/LangContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -8,6 +8,7 @@ import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import ProfilePage from './components/ProfilePage';
 import SchemesPage from './components/SchemesPage';
+import PlantDoctorPage from './components/PlantDoctorPage';
 import HomePage from './components/HomePage';
 import ChatPage from './components/ChatPage';
 import WeatherPage from './components/WeatherPage';
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { path: '/chat', icon: MessageCircle, key: 'startChat' },
   { path: '/tips', icon: Lightbulb, key: 'tips' },
   { path: '/schemes', icon: BookOpen, key: 'schemes' },
+  { path: '/plant', icon: Microscope, key: 'plantDoctor' },
 ];
 
 function LangModal({ onClose }) {
@@ -145,6 +147,7 @@ function Layout() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/schemes" element={<SchemesPage />} />
+          <Route path="/plant"   element={<PlantDoctorPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/weather" element={<WeatherPage />} />

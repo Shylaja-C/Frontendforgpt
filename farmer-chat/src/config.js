@@ -2,7 +2,7 @@ export const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
 export const WEATHER_API_KEY = 'YOUR_OPENWEATHER_API_KEY';
 export const SARVAM_API_KEY = 'YOUR_SARVAM_API_KEY';
 export const FCM_VAPID_KEY = 'YOUR_FCM_VAPID_KEY';
-export const BASE_API_URL = 'http://localhost:8000';
+export const BASE_API_URL = 'http://localhost:5000';
 
 export const LANGUAGES = [
   { code: 'ta-IN', label: 'தமிழ்',   flag: '🇮🇳', sarvam: 'ta-IN', name: 'Tamil' },
@@ -61,6 +61,7 @@ export const T = {
     quickTopics: 'விரைவு தலைப்புகள்',
     language: 'மொழி',
     schemes: 'திட்டங்கள்',
+    plantDoctor: '🌿 தாவர மருத்துவர்',
   },
   'hi-IN': {
     welcome: 'नमस्ते! मैं FarmBot हूँ 🌾',
@@ -82,6 +83,7 @@ export const T = {
     quickTopics: 'त्वरित विषय',
     language: 'भाषा',
     schemes: 'सरकारी योजनाएं',
+    plantDoctor: '🌿 पौधा डॉक्टर',
   },
   'te-IN': {
     welcome: 'నమస్కారం! నేను FarmBot 🌾',
@@ -103,6 +105,7 @@ export const T = {
     quickTopics: 'త్వరిత అంశాలు',
     language: 'భాష',
     schemes: 'ప్రభుత్వ పథకాలు',
+    plantDoctor: '🌿 మొక్క వైద్యుడు',
   },
   'kn-IN': {
     welcome: 'ನಮಸ್ಕಾರ! ನಾನು FarmBot 🌾',
@@ -124,6 +127,7 @@ export const T = {
     quickTopics: 'ತ್ವರಿತ ವಿಷಯಗಳು',
     language: 'ಭಾಷೆ',
     schemes: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',
+    plantDoctor: '🌿 ಸಸ್ಯ ವೈದ್ಯ',
   },
   'ml-IN': {
     welcome: 'നമസ്കാരം! ഞാൻ FarmBot ആണ് 🌾',
@@ -145,6 +149,7 @@ export const T = {
     quickTopics: 'ദ്രുത വിഷയങ്ങൾ',
     language: 'ഭാഷ',
     schemes: 'സർക്കാർ പദ്ധതികൾ',
+    plantDoctor: '🌿 സസ്യ ഡോക്ടർ',
   },
   'en-IN': {
     welcome: 'Hello! I am FarmBot 🌾',
@@ -166,6 +171,7 @@ export const T = {
     quickTopics: 'Quick Topics',
     language: 'Language',
     schemes: 'Gov Schemes',
+    plantDoctor: '🌿 Plant Doctor',
   },
 };
 
