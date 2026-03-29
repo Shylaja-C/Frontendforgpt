@@ -59,6 +59,7 @@ export const T = {
     clearChat: 'அரட்டையை அழிக்கவும்',
     quickTopics: 'விரைவு தலைப்புகள்',
     language: 'மொழி',
+    schemes: 'திட்டங்கள்',
   },
   'hi-IN': {
     welcome: 'नमस्ते! मैं FarmBot हूँ 🌾',
@@ -79,6 +80,7 @@ export const T = {
     clearChat: 'चैट साफ़ करें',
     quickTopics: 'त्वरित विषय',
     language: 'भाषा',
+    schemes: 'सरकारी योजनाएं',
   },
   'te-IN': {
     welcome: 'నమస్కారం! నేను FarmBot 🌾',
@@ -99,6 +101,7 @@ export const T = {
     clearChat: 'చాట్ క్లియర్ చేయండి',
     quickTopics: 'త్వరిత అంశాలు',
     language: 'భాష',
+    schemes: 'ప్రభుత్వ పథకాలు',
   },
   'kn-IN': {
     welcome: 'ನಮಸ್ಕಾರ! ನಾನು FarmBot 🌾',
@@ -119,6 +122,7 @@ export const T = {
     clearChat: 'ಚಾಟ್ ತೆರವುಗೊಳಿಸಿ',
     quickTopics: 'ತ್ವರಿತ ವಿಷಯಗಳು',
     language: 'ಭಾಷೆ',
+    schemes: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು',
   },
   'ml-IN': {
     welcome: 'നമസ്കാരം! ഞാൻ FarmBot ആണ് 🌾',
@@ -139,6 +143,7 @@ export const T = {
     clearChat: 'ചാറ്റ് മായ്ക്കുക',
     quickTopics: 'ദ്രുത വിഷയങ്ങൾ',
     language: 'ഭാഷ',
+    schemes: 'സർക്കാർ പദ്ധതികൾ',
   },
   'en-IN': {
     welcome: 'Hello! I am FarmBot 🌾',
@@ -159,6 +164,7 @@ export const T = {
     clearChat: 'Clear Chat',
     quickTopics: 'Quick Topics',
     language: 'Language',
+    schemes: 'Gov Schemes',
   },
 };
 

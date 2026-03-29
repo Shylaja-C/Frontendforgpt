@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Sprout, Eye, EyeOff, Phone, Lock, User, MapPin, ArrowRight } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", state: "", password: "" });
@@ -14,7 +16,11 @@ export default function SignupPage() {
   function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); navigate("/"); }, 1400);
+    setTimeout(() => {
+      login({ name: form.name, phone: form.phone, state: form.state, isGuest: false });
+      setLoading(false);
+      navigate("/");
+    }, 1400);
   }
 
   return (

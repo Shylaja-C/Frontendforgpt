@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Sprout, Eye, EyeOff, Phone, Lock, User, ArrowRight } from "lucide-react";
-import { useLang } from "../context/LangContext";
+import { Sprout, Eye, EyeOff, Phone, Lock, ArrowRight } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { lang } = useLang();
+  const { login } = useAuth();
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({ phone: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,16 @@ export default function LoginPage() {
   function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); navigate("/"); }, 1200);
+    setTimeout(() => {
+      login({ name: "Farmer", phone: form.phone, isGuest: false });
+      setLoading(false);
+      navigate("/");
+    }, 1200);
+  }
+
+  function continueAsGuest() {
+    login({ isGuest: true });
+    navigate("/");
   }
 
   return (
@@ -98,7 +107,7 @@ export default function LoginPage() {
             <div style={{ flex: 1, height: "1px", background: "#e0e0e0" }} />
           </div>
 
-          <button onClick={() => navigate("/")} style={{ width: "100%", padding: "13px", borderRadius: "12px", border: "1.5px solid #e0e0e0", background: "#fff", fontSize: "15px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", color: "#333" }}>
+          <button onClick={continueAsGuest} style={{ width: "100%", padding: "13px", borderRadius: "12px", border: "1.5px solid #e0e0e0", background: "#fff", fontSize: "15px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", color: "#333" }}>
             <span style={{ fontSize: "20px" }}>🌾</span> Continue as Guest
           </button>
 
