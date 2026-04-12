@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Upload, Camera, AlertTriangle, CheckCircle, XCircle, Leaf, Clock, Activity } from 'lucide-react';
-import { BASE_API_URL } from '../config';
+import { FASTAPI_URL } from '../config';
 import { useLang } from '../context/LangContext';
 import RevivalIntelligence from './RevivalIntelligence';
 
@@ -46,11 +46,16 @@ export default function PlantDoctorPage() {
     try {
       const form = new FormData();
       form.append('file', image);
-      const res = await fetch(`${BASE_API_URL}/analyze`, { method: 'POST', body: form });
-      if (!res.ok) throw new Error('Analysis failed');
-      setResult(await res.json());
+      const res = await fetch(`${FASTAPI_URL}/analyze`, { method: 'POST', body: form });
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+      console.log('Plant analysis result:', data);
+      setResult(data);
     } catch (e) {
-      setError('Could not analyze. Make sure the backend is running.');
+      console.error('Analysis error:', e);
+      setError('Could not analyze. Make sure the FastAPI backend is running on port 8000.');
     }
     setLoading(false);
   }
@@ -101,6 +106,23 @@ export default function PlantDoctorPage() {
 
         {error && <div style={{ background: '#ffebee', border: '1px solid #ffcdd2', borderRadius: '12px', padding: '14px', color: '#c62828', fontSize: '14px', marginBottom: '16px' }}>{error}</div>}
 
+        {/* No API key / rate limit warning */}
+        {(result?.source === 'no_api_key' || result?.source === 'rate_limited') && (
+          <div style={{ background: '#fff3e0', border: '1px solid #ffb300', borderRadius: '14px', padding: '18px', marginBottom: '16px' }}>
+            <div style={{ fontWeight: '800', fontSize: '15px', color: '#e65100', marginBottom: '8px' }}>
+              {result?.source === 'rate_limited' ? '⏳ Rate Limit Reached' : '🔑 AI Key Required'}
+            </div>
+            <p style={{ fontSize: '14px', color: '#bf360c', margin: '0 0 10px' }}>
+              {result?.message}
+            </p>
+            {result?.source === 'no_api_key' && (
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer"
+                style={{ background: '#e65100', color: '#fff', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '700', textDecoration: 'none', display: 'inline-block' }}>
+                Get Free Key →
+              </a>
+            )}
+          </div>
+        )}
         {/* Results */}
         {result && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

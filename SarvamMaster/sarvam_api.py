@@ -43,7 +43,7 @@ def get_llm_advisory(user_query: str, history: List[Dict], target_language: str,
     """
     Core AI logic:
     1. Check Redis Cache for identical queries.
-    2. RAG retrieval.
+    2. RAG retrieval (with timeout to avoid blocking).
     3. Weather context integration.
     4. LLM synthesis.
     5. Save to MongoDB Atlas.
@@ -57,24 +57,25 @@ def get_llm_advisory(user_query: str, history: List[Dict], target_language: str,
         print(f"[CACHE HIT] Serving response for: {user_query}")
         return cached
 
-    # 2. Retrieval Augmented Generation (RAG)
+    # 2. RAG retrieval (with 4s timeout handled inside retrieve_context)
     rag_context = retrieve_context(user_query)
 
-    # REFACTORED:
-    # 1. System: EXPERT PERSONA + VECTOR KNOWLEDGE (Specific to this QUERY)
+    # 3. Build system prompt
     system_msg = get_formatted_prompt(rag_context, target_language, weather)
     
-    # 2. Assembling Message History
+    # 4. Assemble message history - keep only last 4 turns to avoid token limits
     messages = [{"role": "system", "content": system_msg}]
     
-    # Only use the last few turns of history to keep context focused
-    for old_msg in history[-6:]: 
-        messages.append(old_msg)
-        
-    # 3. Add CURRENT USER QUERY
-    messages.append({"role": "user", "content": user_query})
+    # Filter to only user/assistant roles and trim content to avoid 400 errors
+    valid_history = [
+        {"role": m["role"], "content": str(m.get("content", ""))[:500]}
+        for m in history[-4:]
+        if m.get("role") in ("user", "assistant") and m.get("content")
+    ]
+    messages.extend(valid_history)
+    messages.append({"role": "user", "content": user_query[:1000]})
     
-    print(f"📡 Sending Chat Context to Sarvam (Conversation turns: {len(messages)})")
+    print(f"📡 Sending to Sarvam AI (turns: {len(messages)}, RAG: {'yes' if rag_context else 'no'})")
     
     headers = {
         "api-subscription-key": SARVAM_API_KEY,
@@ -83,11 +84,10 @@ def get_llm_advisory(user_query: str, history: List[Dict], target_language: str,
     payload = {
         "model": LLM_MODEL,
         "messages": messages,
-        "temperature": 0.1 # Low temperature for diagnostic stability
+        "temperature": 0.1
     }
     
     try:
-        # Added timeout=45 to prevent hanging the UI
         response = requests.post(
             "https://api.sarvam.ai/v1/chat/completions", 
             headers=headers, 
@@ -98,29 +98,51 @@ def get_llm_advisory(user_query: str, history: List[Dict], target_language: str,
         data = response.json()
         raw_reply = data['choices'][0]['message']['content'] or ""
         
-        # 🧪 ROBUST THOUGHT STRIPPING (handles partial tags or mixed blocks)
-        # 1. Strip full tags
+        # Strip thinking tags
         reply = re.sub(r'<think>.*?</think>', '', raw_reply, flags=re.DOTALL).strip()
-        # 2. Strip dangling opening tag if closing is missing
         reply = re.sub(r'<think>.*', '', reply, flags=re.DOTALL).strip()
         
-        print(f"DEBUG: Processed LLM Output (Len: {len(reply)}): {reply[:100]}...")
+        print(f"✅ Sarvam reply (len: {len(reply)}): {reply[:80]}...")
         
         if len(reply) < 5:
-            print("⚠️ WARNING: LLM returned an empty response after cleaning. Using fallback.")
-            reply = "I understand. I am analyzing the symptoms you mentioned. Could you also please share the approximate temperature and humidity in your area today?"
+            reply = "I understand. Could you share more details about the symptoms you're seeing?"
 
+    except requests.exceptions.HTTPError as e:
+        print(f"❌ Sarvam HTTP Error: {e.response.status_code} - {e.response.text[:200]}")
+        # If 400 bad request, likely message too long - retry with just the current query
+        if e.response.status_code == 400:
+            try:
+                simple_payload = {
+                    "model": LLM_MODEL,
+                    "messages": [
+                        {"role": "system", "content": get_formatted_prompt("", target_language, weather)},
+                        {"role": "user", "content": user_query[:1000]}
+                    ],
+                    "temperature": 0.1
+                }
+                response = requests.post(
+                    "https://api.sarvam.ai/v1/chat/completions",
+                    headers=headers,
+                    json=simple_payload,
+                    timeout=45
+                )
+                response.raise_for_status()
+                data = response.json()
+                raw_reply = data['choices'][0]['message']['content'] or ""
+                reply = re.sub(r'<think>.*?</think>', '', raw_reply, flags=re.DOTALL).strip()
+                reply = re.sub(r'<think>.*', '', reply, flags=re.DOTALL).strip()
+                print(f"✅ Sarvam retry succeeded (len: {len(reply)})")
+            except Exception as retry_e:
+                print(f"❌ Sarvam retry also failed: {retry_e}")
+                return "Sorry, I couldn't process that. Please try asking again."
+        else:
+            return "I'm having trouble connecting right now. Please try again in a moment."
     except Exception as e:
-        print(f"❌ LLM API Error: {e}")
-        if 'response' in locals() and hasattr(response, 'text'):
-            print(f"DEBUG: Response body: {response.text}")
-        return "I apologize, but I am currently having trouble connecting to my knowledge core. Please try again or visit your local KVK."
+        print(f"❌ Sarvam LLM Error: {e}")
+        return "I'm having trouble connecting right now. Please try again in a moment."
     
-    # 3. Cache the result
+    # 5. Cache the result
     cache_response(user_query, target_language, reply)
-    
-    # [NOTE]: save_chat removed here and moved to background tasks in main.py
-    # to avoid network latency blocking the user response.
 
     return reply
 

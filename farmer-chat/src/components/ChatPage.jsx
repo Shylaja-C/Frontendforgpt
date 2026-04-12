@@ -4,13 +4,13 @@ import { useLocation } from 'react-router-dom';
 import { Mic, MicOff, Send, Volume2, Trash2, Bot, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { useLang } from '../context/LangContext';
 import { useAuth } from '../context/AuthContext';
-import { LANGUAGES, t, BASE_API_URL } from '../config';
+import { LANGUAGES, t, FASTAPI_URL } from '../config';
 
 const MEMORY_KEY = 'farmbot_chat_history';
 const HISTORY_KEY = 'farmbot_chat_sessions';
 const CURRENT_SESSION_KEY = 'farmbot_current_session_id';
 
-async function getAIReply(messages, languageName = 'Hindi', userId = 'anonymous_user_1') {
+async function getAIReply(messages, languageName = 'Hindi', userId = 'anonymous_user_1', onToken) {
   try {
     const formData = new FormData();
     const userMsg = messages.filter(m => m.role === 'user').pop();
@@ -21,12 +21,36 @@ async function getAIReply(messages, languageName = 'Hindi', userId = 'anonymous_
     formData.append('history', JSON.stringify(historyToSend));
     formData.append('language', languageName);
     formData.append('user_id', userId);
-    const res = await fetch(`${BASE_API_URL}/api/chat`, { method: 'POST', body: formData });
-    const data = await res.json();
-    return data.reply || 'Sorry, try again.';
+
+    // Use streaming endpoint for real-time token display
+    const res = await fetch(`${FASTAPI_URL}/api/chat/stream`, { method: 'POST', body: formData });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullReply = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const data = JSON.parse(line.slice(6));
+          if (data.done) break;
+          if (data.token) {
+            fullReply += data.token;
+            onToken(fullReply); // update UI in real-time
+          }
+        } catch {}
+      }
+    }
+    return fullReply || 'Sorry, try again.';
   } catch (error) {
     console.error('Chat API Error:', error);
-    return 'Network error. Please check your connection.';
+    return 'Network error. Please check that the FastAPI backend is running on port 8000.';
   }
 }
 
@@ -35,7 +59,7 @@ async function sarvamSpeak(text, langName) {
     const formData = new FormData();
     formData.append('text', text);
     formData.append('language', langName);
-    const res = await fetch(`${BASE_API_URL}/api/tts`, { method: 'POST', body: formData });
+    const res = await fetch(`${FASTAPI_URL}/api/tts`, { method: 'POST', body: formData });
     const data = await res.json();
     if (data.audio_base64) {
       new Audio(`data:audio/wav;base64,${data.audio_base64}`).play();
@@ -175,7 +199,7 @@ export default function ChatPage() {
       const hasLocalSession = existingSessions.some(s => s.id === currentSessionId.current);
       if (hasLocalSession) return;
       try {
-        const res = await fetch(`${BASE_API_URL}/api/history?user_id=${userId}`);
+        const res = await fetch(`${FASTAPI_URL}/api/history?user_id=${userId}`);
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           setMessages(data.map(m => ({ ...m, time: now() })));
@@ -207,7 +231,7 @@ export default function ChatPage() {
         const { latitude: lat, longitude: lon } = pos.coords;
         setCoords({ lat, lon });
         try {
-          await fetch(`${BASE_API_URL}/api/location`, {
+          await fetch(`${FASTAPI_URL}/api/location`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lat, lon }),
@@ -225,8 +249,32 @@ export default function ChatPage() {
     const updated = [...messages, userMsg];
     setMessages(updated);
     setLoading(true);
-    const reply = await getAIReply(updated.map(m => ({ role: m.role, content: m.content })), lang.name, userId);
-    setMessages(prev => [...prev, { role: 'assistant', content: reply, time: now() }]);
+
+    // Add a placeholder streaming message
+    const streamingMsg = { role: 'assistant', content: '', time: now(), streaming: true };
+    setMessages(prev => [...prev, streamingMsg]);
+
+    const reply = await getAIReply(
+      updated.map(m => ({ role: m.role, content: m.content })),
+      lang.name,
+      userId,
+      (partialReply) => {
+        // Update the last message in real-time as tokens arrive
+        setMessages(prev => {
+          const copy = [...prev];
+          copy[copy.length - 1] = { role: 'assistant', content: partialReply, time: now(), streaming: true };
+          return copy;
+        });
+      }
+    );
+
+    // Finalize the message (remove streaming flag)
+    setMessages(prev => {
+      const copy = [...prev];
+      copy[copy.length - 1] = { role: 'assistant', content: reply, time: now() };
+      return copy;
+    });
+
     setLoading(false);
     inputRef.current?.focus();
   }
@@ -235,7 +283,7 @@ export default function ChatPage() {
     if (!coords) { alert('Please enable location for pest reporting.'); return; }
     setPestStatus('checking');
     try {
-      const res = await fetch(`${BASE_API_URL}/api/report_pest`, {
+      const res = await fetch(`${FASTAPI_URL}/api/report_pest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lat: coords.lat, lon: coords.lon, disease_id: 'general_outbreak', user_id: userId }),
@@ -360,7 +408,10 @@ export default function ChatPage() {
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', background: '#f9fafb' }}>
-          {messages.map((m, i) => (
+          {messages.map((m, i) => {
+            // Hide empty streaming placeholder - bouncing dots shown separately below
+            if (m.streaming && !m.content) return null;
+            return (
             <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', gap: '10px', alignItems: 'flex-end' }}>
               {m.role === 'assistant' && (
                 <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg,#1a7a32,#25a244)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -377,9 +428,10 @@ export default function ChatPage() {
                 wordBreak: 'break-word',
               }}>
                 {m.role === 'assistant' ? renderMarkdown(m.content) : m.content}
+                {m.streaming && m.content && <span style={{ display: 'inline-block', width: '2px', height: '16px', background: '#25a244', marginLeft: '2px', animation: 'blink 0.8s infinite', verticalAlign: 'text-bottom' }} />}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', marginTop: '6px', borderTop: m.role === 'assistant' ? '1px solid #f2f2f2' : 'none', paddingTop: m.role === 'assistant' ? '6px' : '0' }}>
                   <span style={{ fontSize: '10px', opacity: 0.6 }}>{m.time}</span>
-                  {m.role === 'assistant' && (
+                  {m.role === 'assistant' && !m.streaming && (
                     <button onClick={() => sarvamSpeak(m.content, lang.name)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#25a244', padding: 0 }}>
                       <Volume2 size={13} />
                     </button>
@@ -387,10 +439,18 @@ export default function ChatPage() {
                 </div>
               </div>
             </div>
-          ))}
-          {loading && (
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <div style={{ background: '#fff', padding: '12px 18px', borderRadius: '18px 18px 18px 4px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', color: '#25a244', fontWeight: 'bold' }}>Thinking...</div>
+            );
+          })}
+          {loading && messages[messages.length - 1]?.content === '' && (
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+              <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg,#1a7a32,#25a244)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Bot size={15} color="#fff" />
+              </div>
+              <div style={{ background: '#fff', padding: '14px 18px', borderRadius: '20px 20px 20px 4px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#25a244', display: 'inline-block', animation: 'bounce 1.2s infinite', animationDelay: '0s' }} />
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#25a244', display: 'inline-block', animation: 'bounce 1.2s infinite', animationDelay: '0.2s' }} />
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#25a244', display: 'inline-block', animation: 'bounce 1.2s infinite', animationDelay: '0.4s' }} />
+              </div>
             </div>
           )}
           <div ref={bottomRef} />

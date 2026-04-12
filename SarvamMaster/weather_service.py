@@ -1,13 +1,53 @@
 import requests
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 
 def get_weather(lat, lon):
     """
-    Fetches real-time weather using Open-Meteo API.
-    Includes temperature, humidity, wind speed, and precipitation data.
+    Fetches real-time weather using OpenWeatherMap API (with fallback to Open-Meteo).
+    Includes temperature, humidity, wind speed, precipitation, and detailed conditions.
     """
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=relative_humidity_2m,temperature_2m,wind_speed_10m,precipitation,weather_code&hourly=precipitation_probability&forecast_days=1&timezone=auto"
+    
+    # Try OpenWeatherMap first (more detailed data)
+    if OPENWEATHER_API_KEY and OPENWEATHER_API_KEY != "your_openweather_api_key_here":
+        try:
+            url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPENWEATHER_API_KEY}&units=metric"
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()
+            data = response.json()
+            
+            main = data.get("main", {})
+            wind = data.get("wind", {})
+            weather_desc = data.get("weather", [{}])[0]
+            rain = data.get("rain", {})
+            
+            weather = {
+                'temperature': main.get('temp', 0),
+                'humidity': main.get('humidity', 0),
+                'windspeed': wind.get('speed', 0) * 3.6,  # Convert m/s to km/h
+                'precipitation': rain.get('1h', 0),
+                'weather_code': weather_desc.get('id', 0),
+                'weather_description': weather_desc.get('description', 'clear'),
+                'precipitation_probability': 0,  # Not available in current weather
+                'pressure': main.get('pressure', 0),
+                'feels_like': main.get('feels_like', 0),
+                'location': data.get('name', 'Unknown'),
+                'timestamp': datetime.now().isoformat(),
+                'source': 'OpenWeatherMap'
+            }
+            print(f"✅ Weather fetched from OpenWeatherMap for {weather['location']}")
+            return weather
+        except Exception as e:
+            print(f"⚠️ OpenWeatherMap failed: {e}, falling back to Open-Meteo")
+    
+    # Fallback to Open-Meteo (free, no API key needed)
     try:
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=relative_humidity_2m,temperature_2m,wind_speed_10m,precipitation,weather_code&hourly=precipitation_probability&forecast_days=1&timezone=auto"
         response = requests.get(url, timeout=5)
         response.raise_for_status()
         data = response.json()
@@ -22,12 +62,18 @@ def get_weather(lat, lon):
             'windspeed': current.get('wind_speed_10m', 0),
             'precipitation': current.get('precipitation', 0),
             'weather_code': current.get('weather_code', 0),
+            'weather_description': 'clear',
             'precipitation_probability': hourly.get('precipitation_probability', [0])[0] if hourly.get('precipitation_probability') else 0,
-            'timestamp': datetime.now().isoformat()
+            'pressure': 0,
+            'feels_like': current.get('temperature_2m', 0),
+            'location': 'Unknown',
+            'timestamp': datetime.now().isoformat(),
+            'source': 'Open-Meteo'
         }
+        print(f"✅ Weather fetched from Open-Meteo (free API)")
         return weather
     except Exception as e:
-        print(f"Error fetching weather: {e}")
+        print(f"❌ Error fetching weather from both APIs: {e}")
         return None
 
 def generate_alert(weather):
